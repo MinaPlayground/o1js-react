@@ -1,10 +1,10 @@
-import { Mina, PublicKey, fetchAccount } from 'o1js';
+import { Mina, PublicKey, fetchAccount } from "o1js";
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { Add } from '../../../contracts/src/Add';
+import type { Add } from "../../../contracts/src/Add";
 
 const state = {
   Add: null as null | typeof Add,
@@ -17,13 +17,13 @@ const state = {
 const functions = {
   setActiveInstanceToBerkeley: async (args: {}) => {
     const Berkeley = Mina.Network(
-      'https://proxy.berkeley.minaexplorer.com/graphql'
+      "https://proxy.berkeley.minaexplorer.com/graphql"
     );
-    console.log('Berkeley Instance Created');
+    console.log("Berkeley Instance Created");
     Mina.setActiveInstance(Berkeley);
   },
   loadContract: async (args: {}) => {
-    const { Add } = await import('../../../contracts/build/src/Add.js');
+    const { Add } = await import("../../../contracts/build/src/Add.js");
     state.Add = Add;
   },
   compileContract: async (args: {}) => {
@@ -37,8 +37,9 @@ const functions = {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
     state.zkapp = new state.Add!(publicKey);
   },
-  getNum: async (args: {}) => {
-    const currentNum = await state.zkapp!.num.get();
+  getField: async (args: { name: string }) => {
+    // @ts-ignore
+    const currentNum = await state.zkapp![args.name].get();
     return JSON.stringify(currentNum.toJSON());
   },
   createUpdateTransaction: async (args: {}) => {
@@ -70,9 +71,9 @@ export type ZkappWorkerReponse = {
   data: any;
 };
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   addEventListener(
-    'message',
+    "message",
     async (event: MessageEvent<ZkappWorkerRequest>) => {
       const returnData = await functions[event.data.fn](event.data.args);
 
@@ -85,4 +86,4 @@ if (typeof window !== 'undefined') {
   );
 }
 
-console.log('Web Worker Successfully Initialized.');
+console.log("Web Worker Successfully Initialized.");

@@ -4,13 +4,13 @@ import { Field, PublicKey } from "o1js";
 
 let transactionFee = 0.1;
 
-export const useO1js = () => {
+export const useO1js = (zkAppKey: string, fields: string[]) => {
   const [state, setState] = useState({
     zkappWorkerClient: null as null | ZkappWorkerClient,
     hasWallet: null as null | boolean,
     hasBeenSetup: false,
     accountExists: false,
-    currentNum: null as null | Field,
+    fields: null as null | { [field: string]: Field },
     publicKey: null as null | PublicKey,
     zkappPublicKey: null as null | PublicKey,
     creatingTransaction: false,
@@ -69,16 +69,19 @@ export const useO1js = () => {
         console.log("zkApp compiled");
         setDisplayText("zkApp compiled...");
 
-        const zkappPublicKey = PublicKey.fromBase58(
-          "B62qo2Be4Udo5EG1ux9yMJVkXe9Gz945cocN7Bn4W9DSYyeHZr1C3Ea"
-        );
+        const zkappPublicKey = PublicKey.fromBase58(zkAppKey);
 
         await zkappWorkerClient.initZkappInstance(zkappPublicKey);
 
         console.log("Getting zkApp state...");
         setDisplayText("Getting zkApp state...");
         await zkappWorkerClient.fetchAccount({ publicKey: zkappPublicKey });
-        const currentNum = await zkappWorkerClient.getNum();
+        const currentNum = await zkappWorkerClient.getField("num");
+        const values = await Promise.all(
+          fields.map(async (item) => {
+            return [[item], await zkappWorkerClient.getField(item)];
+          })
+        );
         console.log(`Current state in zkApp: ${currentNum.toString()}`);
         setDisplayText("");
 
@@ -90,7 +93,7 @@ export const useO1js = () => {
           publicKey,
           zkappPublicKey,
           accountExists,
-          currentNum,
+          fields: Object.fromEntries(values),
         });
       }
     })();
@@ -162,9 +165,9 @@ export const useO1js = () => {
     await state.zkappWorkerClient!.fetchAccount({
       publicKey: state.zkappPublicKey!,
     });
-    const currentNum = await state.zkappWorkerClient!.getNum();
-    setState({ ...state, currentNum });
-    console.log(`Current state in zkApp: ${currentNum.toString()}`);
+    // const currentNum = await state.zkappWorkerClient!.getNum();
+    // setState({ ...state, currentNum });
+    // console.log(`Current state in zkApp: ${currentNum.toString()}`);
     setDisplayText("");
   };
 

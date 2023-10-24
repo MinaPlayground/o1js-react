@@ -158,16 +158,18 @@ export const useO1js = (zkAppKey: string, fields: string[]) => {
     setState({ ...state, creatingTransaction: false });
   };
 
-  const onRefreshCurrentNum = async () => {
+  const onRefresh = async (name: string) => {
     console.log("Getting zkApp state...");
     setDisplayText("Getting zkApp state...");
 
     await state.zkappWorkerClient!.fetchAccount({
       publicKey: state.zkappPublicKey!,
     });
-    // const currentNum = await state.zkappWorkerClient!.getNum();
-    // setState({ ...state, currentNum });
-    // console.log(`Current state in zkApp: ${currentNum.toString()}`);
+    const fieldValue = await state.zkappWorkerClient!.getField(name);
+    const updatedFields = { ...state.fields };
+    updatedFields![name] = fieldValue;
+    setState({ ...state, fields: updatedFields });
+    console.log(`Current state in zkApp: ${fieldValue.toString()}`);
     setDisplayText("");
   };
 
@@ -176,6 +178,6 @@ export const useO1js = (zkAppKey: string, fields: string[]) => {
     transactionlink,
     displayText,
     onSendTransaction,
-    onRefreshCurrentNum,
+    onRefresh,
   };
 };

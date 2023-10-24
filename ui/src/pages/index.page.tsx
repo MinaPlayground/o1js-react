@@ -6,13 +6,8 @@ import { useO1js } from "@/hooks/useO1js";
 const zkAppKey = "B62qo2Be4Udo5EG1ux9yMJVkXe9Gz945cocN7Bn4W9DSYyeHZr1C3Ea";
 
 export default function Home() {
-  const {
-    state,
-    transactionlink,
-    displayText,
-    onSendTransaction,
-    onRefreshCurrentNum,
-  } = useO1js(zkAppKey, ["num"]);
+  const { state, transactionlink, displayText, onSendTransaction, onRefresh } =
+    useO1js(zkAppKey, ["num"]);
 
   let hasWallet;
   if (state.hasWallet != null && !state.hasWallet) {
@@ -71,7 +66,7 @@ export default function Home() {
         >
           Send Transaction
         </button>
-        <button className={styles.card} onClick={onRefreshCurrentNum}>
+        <button className={styles.card} onClick={() => onRefresh("num")}>
           Get Latest State
         </button>
       </div>

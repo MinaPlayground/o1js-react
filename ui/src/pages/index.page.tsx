@@ -3,6 +3,8 @@ import GradientBG from "../components/GradientBG.js";
 import styles from "../styles/Home.module.css";
 import { useO1js } from "@/hooks/useO1js";
 
+const zkAppKey = "B62qo2Be4Udo5EG1ux9yMJVkXe9Gz945cocN7Bn4W9DSYyeHZr1C3Ea";
+
 export default function Home() {
   const {
     state,
@@ -10,7 +12,7 @@ export default function Home() {
     displayText,
     onSendTransaction,
     onRefreshCurrentNum,
-  } = useO1js();
+  } = useO1js(zkAppKey, ["num"]);
 
   let hasWallet;
   if (state.hasWallet != null && !state.hasWallet) {
@@ -60,7 +62,7 @@ export default function Home() {
     mainContent = (
       <div style={{ justifyContent: "center", alignItems: "center" }}>
         <div className={styles.center} style={{ padding: 0 }}>
-          Current state in zkApp: {state.currentNum!.toString()}{" "}
+          Current state in zkApp: {state.fields!["num"].toString()}{" "}
         </div>
         <button
           className={styles.card}

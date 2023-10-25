@@ -2,41 +2,13 @@ import "./reactCOIServiceWorker";
 import GradientBG from "../components/GradientBG.js";
 import styles from "../styles/Home.module.css";
 import { useO1js } from "@/hooks/useO1js";
+import Setup from "@/components/Setup";
 
 const zkAppKey = "B62qo2Be4Udo5EG1ux9yMJVkXe9Gz945cocN7Bn4W9DSYyeHZr1C3Ea";
 
 export default function Home() {
   const { state, transactionlink, displayText, onSendTransaction, onRefresh } =
     useO1js(zkAppKey, ["num"]);
-
-  let hasWallet;
-  if (state.hasWallet != null && !state.hasWallet) {
-    const auroLink = "https://www.aurowallet.com/";
-    const auroLinkElem = (
-      <a href={auroLink} target="_blank" rel="noreferrer">
-        Install Auro wallet here
-      </a>
-    );
-    hasWallet = <div>Could not find a wallet. {auroLinkElem}</div>;
-  }
-
-  const stepDisplay = transactionlink ? (
-    <a href={displayText} target="_blank" rel="noreferrer">
-      View transaction
-    </a>
-  ) : (
-    displayText
-  );
-
-  let setup = (
-    <div
-      className={styles.start}
-      style={{ fontWeight: "bold", fontSize: "1.5rem", paddingBottom: "5rem" }}
-    >
-      {stepDisplay}
-      {hasWallet}
-    </div>
-  );
 
   let accountDoesNotExist;
   if (state.hasBeenSetup && !state.accountExists) {
@@ -77,7 +49,11 @@ export default function Home() {
     <GradientBG>
       <div className={styles.main} style={{ padding: 0 }}>
         <div className={styles.center} style={{ padding: 0 }}>
-          {setup}
+          <Setup
+            displayText={displayText}
+            transactionLink={transactionlink}
+            hasWallet={state.hasWallet}
+          />
           {accountDoesNotExist}
           {mainContent}
         </div>

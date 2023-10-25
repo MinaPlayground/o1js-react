@@ -169,7 +169,9 @@ export const useO1js = (zkAppKey: string, fields: string[]) => {
     const updatedFields = { ...state.fields };
     updatedFields![name] = fieldValue;
     setState({ ...state, fields: updatedFields });
-    console.log(`Current state in zkApp: ${fieldValue.toString()}`);
+    console.log(
+      `Current state in zkApp for field ${name}: ${fieldValue.toString()}`
+    );
     setDisplayText("");
   };
 

@@ -1,14 +1,12 @@
-import { Mina, PublicKey, fetchAccount } from "o1js";
+import { fetchAccount, Mina, PublicKey } from "o1js";
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { Add } from "../../../contracts/src/Add";
-
 const state = {
-  Add: null as null | typeof Add,
-  zkapp: null as null | Add,
+  contract: null,
+  zkapp: null,
   transaction: null as null | Transaction,
 };
 
@@ -22,12 +20,16 @@ const functions = {
     console.log("Berkeley Instance Created");
     Mina.setActiveInstance(Berkeley);
   },
-  loadContract: async (args: {}) => {
-    const { Add } = await import("../../../contracts/build/src/Add.js");
-    state.Add = Add;
+  loadContract: async (args: { contract: any; className: string }) => {
+    // const { Add } = await import("../../../contracts/build/src/Add.js");
+    // state.Add = Add;
+    const { contract, className } = args;
+    const contracts = await contract;
+    console.log(contract);
+    state.contract = contracts[className];
   },
   compileContract: async (args: {}) => {
-    await state.Add!.compile();
+    await state.contract.compile();
   },
   fetchAccount: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -35,7 +37,7 @@ const functions = {
   },
   initZkappInstance: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
-    state.zkapp = new state.Add!(publicKey);
+    state.zkapp = new state.contract(publicKey);
   },
   getField: async (args: { name: string }) => {
     // @ts-ignore

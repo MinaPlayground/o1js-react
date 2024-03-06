@@ -13,8 +13,8 @@ export default class ZkappWorkerClient {
     return this._call("setActiveInstanceToBerkeley", {});
   }
 
-  loadContract() {
-    return this._call("loadContract", {});
+  loadContract({ contract, className }: { contract: any; className: string }) {
+    return this._call("loadContract", { contract, className });
   }
 
   compileContract() {

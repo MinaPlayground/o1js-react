@@ -61,7 +61,14 @@ export const useO1js = (zkAppKey: string, fields: string[]) => {
         });
         const accountExists = res.error == null;
 
-        await zkappWorkerClient.loadContract();
+        await zkappWorkerClient.loadContract({
+          contract: JSON.stringify(
+            (
+              await import("../../../contracts/build/src/Add.js")
+            ).Add
+          ),
+          className: "Add",
+        });
 
         console.log("Compiling zkApp...");
         setDisplayText("Compiling zkApp...");
